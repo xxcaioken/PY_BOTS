@@ -30,7 +30,6 @@ ENV/
 
 # Arquivos de IDE
 .idea/
-.vscode/
 *.swp
 *.swo
 
