@@ -104,7 +104,7 @@ class AutomacaoBotao:
     
     def loop_automacao(self):
         while self.rodando_loop:
-            self.encontrar_e_clicar_no_botao("Botao.png")
+            self.encontrar_e_clicar_no_botao("bots/automacao_botao/Botao.png")
             time.sleep(int(self.intervalo.get()))
     
     def toggle_loop(self):
@@ -123,7 +123,7 @@ class AutomacaoBotao:
             self.progress.stop()
     
     def iniciar_automacao(self):
-        self.encontrar_e_clicar_no_botao("Botao.png")
+        self.encontrar_e_clicar_no_botao("bots/automacao_botao/Botao.png")
     
     def iniciar(self):
         self.root.mainloop() 
