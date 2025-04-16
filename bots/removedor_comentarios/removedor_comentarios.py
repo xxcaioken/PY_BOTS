@@ -4,10 +4,8 @@ import os
 import re
 
 class RemovedorComentarios:
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.title("Removedor de Comentários")
-        self.root.geometry("600x400")
+    def __init__(self, root):
+        self.root = root
         
         
         self.linguagens = {
@@ -21,7 +19,7 @@ class RemovedorComentarios:
             "Python": {
                 "extensao": ".py",
                 "padroes": [
-                    (r'#.*$', ''),
+                    (r'
                     (r'', ''),  
                     (r"", '')  
                 ]
@@ -48,73 +46,126 @@ class RemovedorComentarios:
         self.path_var = tk.StringVar()
         self.backup_var = tk.BooleanVar(value=True)
         
+        
+        self.criar_janela()
+        
+    def criar_janela(self):
+        self.window = tk.Toplevel(self.root)
+        self.window.title("Removedor de Comentários")
+        
+        
+        tamanho_atual = self.root.geometry()
+        
+        
+        self.root.withdraw()
+        
+        
+        self.window.geometry(tamanho_atual)
+        
+        
+        self.criar_menu()
+        
+        
         self.criar_interface()
         
-    def criar_interface(self):
+    def criar_menu(self):
+        menubar = tk.Menu(self.window)
+        self.window.config(menu=menubar)
         
-        main_frame = tk.Frame(self.root, padx=20, pady=20)
+        
+        bots_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Bots", menu=bots_menu)
+        
+        bots_menu.add_command(label="Teclado Automático", command=self.abrir_teclado_automatico)
+        bots_menu.add_command(label="Automador de Botões", command=self.abrir_automador_botoes)
+        bots_menu.add_command(label="Deletor de Arquivos", command=self.abrir_deletor_arquivos)
+        bots_menu.add_command(label="MacroBotManager", command=self.abrir_macro_bot)
+        bots_menu.add_command(label="Removedor de Comentários", command=self.abrir_removedor_comentarios)
+        
+        
+        ajuda_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Ajuda", menu=ajuda_menu)
+        ajuda_menu.add_command(label="Sobre", command=self.mostrar_sobre)
+        
+    def criar_interface(self):
+        main_frame = tk.Frame(self.window, padx=20, pady=20)
         main_frame.pack(expand=True, fill=tk.BOTH)
         
         
         tk.Label(main_frame, 
                 text="Removedor de Comentários", 
-                font=("Arial", 16, "bold")).pack(pady=10)
+                font=("Arial", 24, "bold")).pack(pady=10)
         
         
         lang_frame = tk.Frame(main_frame)
         lang_frame.pack(fill=tk.X, pady=10)
         
-        tk.Label(lang_frame, text="Linguagem:").pack(side=tk.LEFT, padx=5)
+        tk.Label(lang_frame, 
+                text="Linguagem:", 
+                font=("Arial", 12)).pack(side=tk.LEFT, padx=5)
+        
+        self.linguagem_var = tk.StringVar(value="Java")
         lang_dropdown = ttk.Combobox(lang_frame, 
                                    textvariable=self.linguagem_var,
                                    values=list(self.linguagens.keys()),
-                                   state="readonly")
+                                   state="readonly",
+                                   font=("Arial", 12))
         lang_dropdown.pack(side=tk.LEFT, padx=5)
-        
-        
-        lang_dropdown.bind('<<ComboboxSelected>>', lambda e: self.linguagem_var.set(lang_dropdown.get()))
         
         
         mode_frame = tk.Frame(main_frame)
         mode_frame.pack(fill=tk.X, pady=10)
         
-        tk.Label(mode_frame, text="Modo:").pack(side=tk.LEFT, padx=5)
+        tk.Label(mode_frame, 
+                text="Modo:", 
+                font=("Arial", 12)).pack(side=tk.LEFT, padx=5)
+        
+        self.modo_var = tk.StringVar(value="Arquivo Único")
         mode_dropdown = ttk.Combobox(mode_frame, 
                                    textvariable=self.modo_var,
                                    values=["Arquivo Único", "Pasta Inteira"],
-                                   state="readonly")
+                                   state="readonly",
+                                   font=("Arial", 12))
         mode_dropdown.pack(side=tk.LEFT, padx=5)
-        
-        
-        mode_dropdown.bind('<<ComboboxSelected>>', lambda e: self.modo_var.set(mode_dropdown.get()))
         
         
         path_frame = tk.Frame(main_frame)
         path_frame.pack(fill=tk.X, pady=10)
         
-        tk.Label(path_frame, text="Caminho:").pack(side=tk.LEFT, padx=5)
-        path_entry = tk.Entry(path_frame, textvariable=self.path_var, width=40)
+        tk.Label(path_frame, 
+                text="Caminho:", 
+                font=("Arial", 12)).pack(side=tk.LEFT, padx=5)
+        
+        self.path_var = tk.StringVar()
+        path_entry = tk.Entry(path_frame, 
+                            textvariable=self.path_var,
+                            width=40,
+                            font=("Arial", 12))
         path_entry.pack(side=tk.LEFT, padx=5)
         
         browse_btn = tk.Button(path_frame, 
                              text="Procurar", 
-                             command=self.selecionar_caminho)
+                             command=self.selecionar_caminho,
+                             font=("Arial", 12))
         browse_btn.pack(side=tk.LEFT, padx=5)
         
         
         options_frame = tk.Frame(main_frame)
         options_frame.pack(fill=tk.X, pady=10)
         
+        self.backup_var = tk.BooleanVar(value=True)
         backup_check = tk.Checkbutton(options_frame, 
                                     text="Criar backup antes de remover",
-                                    variable=self.backup_var)
+                                    variable=self.backup_var,
+                                    font=("Arial", 12))
         backup_check.pack(side=tk.LEFT, padx=5)
         
         
         remove_btn = tk.Button(main_frame, 
                              text="Remover Comentários", 
                              command=self.remover_comentarios,
-                             width=20, height=2)
+                             width=20, height=2,
+                             font=("Arial", 12))
         remove_btn.pack(pady=20)
         
         
@@ -122,8 +173,62 @@ class RemovedorComentarios:
                                  text="Pronto", 
                                  bd=1, 
                                  relief=tk.SUNKEN, 
-                                 anchor=tk.W)
+                                 anchor=tk.W,
+                                 font=("Arial", 12))
         self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
+    def on_closing(self):
+        
+        tamanho_atual = self.window.geometry()
+        self.window.destroy()
+        self.root.deiconify()  
+        self.root.geometry(tamanho_atual)  
+        
+    def abrir_teclado_automatico(self):
+        try:
+            from bots.teclado_automatico.teclado_automatico import TecladoAutomatico
+            self.window.destroy()
+            app = TecladoAutomatico(self.root)
+        except Exception as e:
+            self.status_bar.config(text=f"Erro: {str(e)}")
+            
+    def abrir_automador_botoes(self):
+        try:
+            from bots.automacao_botao.automacao_botao import AutomacaoBotao
+            self.window.destroy()
+            app = AutomacaoBotao(self.root)
+        except Exception as e:
+            self.status_bar.config(text=f"Erro: {str(e)}")
+            
+    def abrir_deletor_arquivos(self):
+        try:
+            from bots.deletor_arquivos.deletor_arquivos import DeletorArquivos
+            self.window.destroy()
+            app = DeletorArquivos(self.root)
+        except Exception as e:
+            self.status_bar.config(text=f"Erro: {str(e)}")
+            
+    def abrir_macro_bot(self):
+        try:
+            from bots.macro_bot_manager.macro_bot_manager import MacroBotManager
+            self.window.destroy()
+            app = MacroBotManager(self.root)
+        except Exception as e:
+            self.status_bar.config(text=f"Erro: {str(e)}")
+            
+    def abrir_removedor_comentarios(self):
+        try:
+            from bots.removedor_comentarios.removedor_comentarios import RemovedorComentarios
+            self.window.destroy()
+            app = RemovedorComentarios(self.root)
+        except Exception as e:
+            self.status_bar.config(text=f"Erro: {str(e)}")
+            
+    def mostrar_sobre(self):
+        messagebox.showinfo("Sobre", "Removedor de Comentários v1.0\n\nUm bot para remover comentários de código fonte.")
         
     def obter_extensoes(self):
         linguagem = self.linguagem_var.get()
@@ -212,7 +317,4 @@ class RemovedorComentarios:
         with open(caminho, 'r', encoding='utf-8') as f:
             conteudo = f.read()
         with open(backup_path, 'w', encoding='utf-8') as f:
-            f.write(conteudo)
-            
-    def iniciar(self):
-        self.root.mainloop() 
+            f.write(conteudo) 
