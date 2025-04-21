@@ -19,9 +19,9 @@ class RemovedorComentarios:
             "Python": {
                 "extensao": ".py",
                 "padroes": [
-                    (r'
-                    (r'', ''),  
-                    (r"", '')  
+                    (r'#.*$', ''),
+                    (r'""".*?"""', '', re.DOTALL),
+                    (r"'''.*?'''", '', re.DOTALL) 
                 ]
             },
             "JavaScript": {
